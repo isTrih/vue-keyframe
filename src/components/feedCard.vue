@@ -1,0 +1,196 @@
+<script setup>
+import {ref} from "vue";
+
+defineProps({
+  card_columns: {
+    default: () => {
+    }
+  }
+})
+const emit = defineEmits(['show-detail'])
+
+const details = (id, event) => {
+  const target = event.target;
+  const left = target.x;
+  const top = target.y;
+  emit('show-detail', id, left, top)
+}
+// const like = id => {
+//   emit('like', id)
+// }
+
+//标题转换
+const titleFormat = (title) => {
+  if (title.length > 16) {
+    return title.substring(0, 16) + '...';
+  } else {
+    return title;
+  }
+};
+
+//数字模糊转换
+function numFormat(num) {
+  if (10 < num && num <= 100) {
+    return '10+';
+  } else if (1000 >= num && num > 100) {
+    return '100+';
+  } else if (10000 >= num && num > 1000) {
+    return '1千+';
+  } else if (50000 >= num && num > 10000) {
+    return '1万+';
+  } else if (100000 >= num && num > 50000) {
+    return '5万+';
+  } else if (num > 100000) {
+    return '10万+';
+  } else if (num <= 10) {
+    return num.toString();
+
+  } else {
+    return num;
+  }
+
+};
+
+const ok = ref(false)
+const handleLoad = (card) => {
+  card.loaded = true
+}
+</script>
+
+<template>
+  <div class="col">
+    <div v-for="col in card_columns" :key="col.id">
+      <section v-for="card in col" :key="card.id">
+        <div v-show="card.loaded" style=" padding: 0" class="card">
+          <a :href="`/explore/${card.id}`" @click.prevent="details(card.id)">
+            <img
+                :src="card.media_url"
+                class="image"
+                @load="handleLoad(card)"
+                alt=""
+            />
+          </a>
+          <div style="padding: 0.1rem">
+            <div style="margin-bottom: 2px;height: 20px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+              <span id="title" @click="details(card.id)">{{ titleFormat(card.title) }}</span>
+            </div>
+            <div class="bottom" style="display:flex; justify-content: space-between;">
+              <a-row style="align-items: center;">
+                <RouterLink :to="`/user/index/${card.user.id}`">
+                  <a-avatar :size="24">
+                    <img
+                        alt="avatar"
+                        :src="card.user.avatar"
+                    />
+                  </a-avatar>
+                </RouterLink>
+                <div class="user_name" style="float: right;">{{ card.user.user_name }}</div>
+              </a-row>
+              <a-row style="align-items: center;">
+                <!--//TODO:未来来这里实现外部点赞功能-->
+                <div class="user_name" style="float: right;">
+                  <icon-heart/>
+                  {{ numFormat(card.like_num) }}
+                </div>
+              </a-row>
+            </div>
+          </div>
+        </div>
+        <div v-if="!card.loaded">
+          <div class="card loading">
+            <div class="image" :style="{height: card.media.height / (card.media.width / 250) + 'px'}">
+            </div>
+            <div style="padding: 10px">
+              <div
+                  style="margin-bottom: 10px;height: 20px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+                <span style="font-size: 0.9rem;color:black;font-weight: bold;text-align: left">{{
+                    titleFormat(card.title)
+                  }}</span>
+              </div>
+              <div class="bottom">
+                <a-row style="align-items: center;">
+                  <RouterLink :to="`/user/index/${card.user.id}`">
+                    <div class="avatar"></div>
+                  </RouterLink>
+                  <div class="user_name">{{ card.user.user_name }}</div>
+                </a-row>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+#title {
+  display: -webkit-box;
+  text-align: start;
+  margin-bottom: 8px;
+  word-break: break-all;
+  color: black;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.col {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.loading .image,
+.loading .avatar {
+  background: gainsboro linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, .5) 50%,
+      rgba(255, 255, 255, 0) 60%
+  );
+  background-size: 200% 100%;
+  background-position-x: 180%;
+  animation: 1s loading ease-in-out infinite;
+}
+
+@keyframes loading {
+  to {
+    background-position-x: -20%;
+  }
+}
+
+.loading .avatar {
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+}
+
+section {
+  width: 250px;
+  break-inside: avoid; /* 防止卡片被分割在两列中 */
+  margin: 20px 20px 20px 20px;
+}
+
+.card {
+  border-radius: 0.8rem;
+  background-color: transparent;
+}
+
+.image {
+  width: 250px;
+  border-radius: 0.8rem;
+  object-fit: fill;
+}
+
+.image:hover {
+  opacity: 0.7;
+}
+
+.user_name {
+  color: black;
+  margin-left: 10px;
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+</style>
