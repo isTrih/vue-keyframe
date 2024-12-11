@@ -3,31 +3,45 @@ import http from "@/utils/http";
 // 登录
 export const login = ({mobile, password}) => {
     return http({
-        url: '/login/',
+        url: '/user/login-mobile-pass',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         data: {
-            mobile,
-            password
+            "mobile": mobile,
+            "password": password
         }
     })
 }
 
-
-// 注册
-export const Register = ({mobile, username, password}) => {
+// 获取验证码
+export const Verifycode = (mobile) => {
     return http({
-        url: '/register/',
+        url: '/user/verify-code',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         data: {
-            username,
-            password,
-            mobile
+            "mobile": mobile,
+        }
+    })
+}
+
+// 注册
+export const Register = ({mobile, username, password, verifyCode}) => {
+    return http({
+        url: '/user/register',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: {
+            "username": username,
+            "password": password,
+            "mobile":mobile,
+            "verifyCode":verifyCode
         }
     })
 }

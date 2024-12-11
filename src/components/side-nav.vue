@@ -5,10 +5,6 @@ import Login from '@/views/Login/index.vue'
 //路由管理
 import router from "@/router/index.js";
 
-//测试登录使用
-const isLogin = ref(false);
-// isLogin.value = true;
-
 //全局导航栏管理
 import {useNavStore} from "@/stores/nav";
 
@@ -38,7 +34,6 @@ const changeShow = () => {
     })
   }
   show.value = !show.value;
-
 }
 
 function navClick(key) {
@@ -82,7 +77,7 @@ function toDoc(which) {
           </template>
           <p id="menu-t">通知</p>
         </a-menu-item>
-        <a-menu-item id="menu" class="menu" key="4" v-show="isLogin">
+        <a-menu-item id="menu" class="menu" key="4" v-show="userStore.userInfo.id">
           <template #icon>
             <a-avatar :size="24"
                       image-url="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp">
@@ -93,7 +88,7 @@ function toDoc(which) {
         </a-menu-item>
       </a-menu>
     </div>
-    <div class="button" v-show="!isLogin">
+    <div class="button" v-show="!userStore.userInfo.id">
       <a-button type="primary" shape="round" size="large" @click="changeShow" long>登录</a-button>
       <div style="border: 1px solid #b8b8b8;border-radius: 12px;margin-top: 12px;align-items: center;">
         <p class="f" style="font-weight: bold;color:black">马上登录即可享受： </p>
@@ -118,8 +113,7 @@ function toDoc(which) {
 
     <div style="position: absolute;bottom: 0;margin-top: 40vh">
       <a-popover title="更多" trigger="hover">
-        <a-button class="button" type="text" shape="round"
-                  size="large">
+        <a-button class="button" type="text" shape="round" size="large">
           <icon-experiment/>
           更多
         </a-button>

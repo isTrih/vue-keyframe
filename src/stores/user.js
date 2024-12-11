@@ -13,12 +13,16 @@ export const useUserStore = defineStore('user', () => {
     };
 
     const getUserInfo = async ({mobile, password}) => {
-        userInfo.value = await login({mobile, password});
-        const focusResult = await queryUserFocus();
-        userFocus.value = focusResult.info.follow;
-        userCollect.value = focusResult.info.collected;
-        userFavorite.value = focusResult.info.favorites;
-        headersObj.value = {Authorization: `Bearer ${userInfo.value.token}`}
+        const resp = await login({mobile, password});
+        if (resp.code === 0) {
+            userInfo.value = resp.data;
+            const focusResult = await queryUserFocus();
+            userFocus.value = focusResult.info.follow;
+            userCollect.value = focusResult.info.collected;
+            userFavorite.value = focusResult.info.favorites;
+            headersObj.value = {Authorization: `Bearer ${userInfo.value.token}`}
+            return resp.code;
+        } else return [resp.code, resp.msg];
     };
 
     const extendUserInfo = (type, id) => {

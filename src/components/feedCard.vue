@@ -1,5 +1,4 @@
 <script setup>
-import {ref} from "vue";
 
 defineProps({
   card_columns: {
@@ -7,14 +6,7 @@ defineProps({
     }
   }
 })
-const emit = defineEmits(['show-detail'])
 
-const details = (id, event) => {
-  const target = event.target;
-  const left = target.x;
-  const top = target.y;
-  emit('show-detail', id, left, top)
-}
 // const like = id => {
 //   emit('like', id)
 // }
@@ -49,9 +41,16 @@ function numFormat(num) {
     return num;
   }
 
-};
+}
 
-const ok = ref(false)
+const emit = defineEmits(['show-detail'])
+const details = (id, event) => {
+  const target = event.target;
+  const left = target.x;
+  const top = target.y;
+  emit('show-detail', id, left, top)
+}
+
 const handleLoad = (card) => {
   card.loaded = true
 }
@@ -78,13 +77,12 @@ const handleLoad = (card) => {
               <a-row style="align-items: center;">
                 <RouterLink :to="`/user/index/${card.user.id}`">
                   <a-avatar :size="24">
-                    <img
-                        alt="avatar"
-                        :src="card.user.avatar"
-                    />
+                    <img alt="avatar" :src="card.user.avatar"/>
                   </a-avatar>
                 </RouterLink>
-                <div class="user_name" style="float: right;">{{ card.user.user_name }}</div>
+                <RouterLink :to="`/user/index/${card.user.id}`">
+                  <div class="user_name" style="float: left;">{{ card.user.user_name }}</div>
+                </RouterLink>
               </a-row>
               <a-row style="align-items: center;">
                 <!--//TODO:未来来这里实现外部点赞功能-->
@@ -103,16 +101,24 @@ const handleLoad = (card) => {
             <div style="padding: 10px">
               <div
                   style="margin-bottom: 10px;height: 20px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
-                <span style="font-size: 0.9rem;color:black;font-weight: bold;text-align: left">{{
-                    titleFormat(card.title)
-                  }}</span>
+                <span id="title" @click="details(card.id)">{{ titleFormat(card.title) }}</span>
               </div>
-              <div class="bottom">
+              <div class="bottom" style="display:flex; justify-content: space-between;">
                 <a-row style="align-items: center;">
                   <RouterLink :to="`/user/index/${card.user.id}`">
                     <div class="avatar"></div>
                   </RouterLink>
-                  <div class="user_name">{{ card.user.user_name }}</div>
+                  <RouterLink :to="`/user/index/${card.user.id}`">
+                    <div class="user_name">{{ card.user.user_name }}</div>
+                  </RouterLink>
+
+                </a-row>
+                <a-row style="align-items: center;">
+                  <!--//TODO:未来来这里实现外部点赞功能-->
+                  <div class="user_name" style="float: right;">
+                    <icon-heart/>
+                    {{ numFormat(card.like_num) }}
+                  </div>
                 </a-row>
               </div>
             </div>
