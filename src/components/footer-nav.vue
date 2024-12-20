@@ -62,16 +62,21 @@ function navClick(key) {
       <a-menu-item id="menu" class="menu" key="3">
         <icon-notification/>
       </a-menu-item>
-      <a-menu-item id="menu" class="menu" key="4" >
+      <a-menu-item v-if="userStore.userInfo.id" id="menu" class="menu" key="4" >
         <template #icon>
-          <a-avatar v-show="!userStore.userInfo.id" id="avatar" :size="32" :style="{ backgroundColor: '#194D95' }"
-                    @click="changeShow">
-            登录
-          </a-avatar>
-          <a-avatar v-show="userStore.userInfo.id" id="avatar" :size="32"
+          <a-avatar id="avatar" :size="32"
                     image-url="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp">
           </a-avatar>
         </template>
+      </a-menu-item>
+      <a-menu-item v-if="!userStore.userInfo.id" id="menu" class="menu" key="5" >
+        <template #icon>
+          <a-avatar  id="avatar" :size="32" :style="{ backgroundColor: '#194D95' }"
+                    @click="changeShow">
+            登录
+          </a-avatar>
+        </template>
+
       </a-menu-item>
     </a-menu>
   </div>

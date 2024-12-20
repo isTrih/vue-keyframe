@@ -118,6 +118,7 @@ export const doFocus = ({id}) => {
 export const queryUserFocus = () => {
     return http({
         url: '/user/focus/',
+        method: 'GET',
     })
 }
 

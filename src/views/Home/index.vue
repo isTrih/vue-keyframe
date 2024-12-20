@@ -12,30 +12,9 @@ import FooterNav from "@/components/footer-nav.vue";
 
 const navStore = useNavStore();
 
-//判断移动端
-function isMobile() {
-  let flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
-  return flag;
-}
-if (isMobile()) {
-  Message.info({
-        content: "移动端",
-        duration: 2000,
-
-      }
-  )
-}
-
 const onCollapse = (collapsed) => {
-  console.log(showBottom);
   // collapsed 收起时为true
   showBottom.value = collapsed === true;
-
-
-  Message.info({
-    content: navStore.activeNavbar,
-    duration: 2000,
-  });
 }
 
 </script>

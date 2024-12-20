@@ -240,6 +240,7 @@ const doLogin = () => {
           content: '登录成功',
           duration: 1500,
         })
+        closeLogin()
       } else {
         Message.error({
           content: msg,

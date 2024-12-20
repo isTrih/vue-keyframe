@@ -16,12 +16,13 @@ export const useUserStore = defineStore('user', () => {
         const resp = await login({mobile, password});
         if (resp.code === 0) {
             userInfo.value = resp.data;
-            const focusResult = await queryUserFocus();
-            userFocus.value = focusResult.info.follow;
-            userCollect.value = focusResult.info.collected;
-            userFavorite.value = focusResult.info.favorites;
             headersObj.value = {Authorization: `Bearer ${userInfo.value.token}`}
-            return resp.code;
+            // const focusResult = await queryUserFocus();
+            // userFocus.value = focusResult.info.follow;
+            // userCollect.value = focusResult.info.collected;
+            // userFavorite.value = focusResult.info.favorites;
+            console.log(resp);
+            return [resp.code, "登录成功"];
         } else return [resp.code, resp.msg];
     };
 
