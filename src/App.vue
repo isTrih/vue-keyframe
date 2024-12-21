@@ -1,6 +1,19 @@
 <script setup>
 import {RouterView} from 'vue-router'
-
+import { onMounted } from "vue";
+// 禁止web端屏幕缩放
+onMounted(() => {
+  window.onload = function () {
+    document.addEventListener("touchstart", function (event) {
+      if (event.touches.length > 1) {
+        event.preventDefault();
+      }
+    });
+    document.addEventListener("gesturestart", function (event) {
+      event.preventDefault();
+    });
+  };
+});
 </script>
 <template>
   <div id="app">

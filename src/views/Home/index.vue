@@ -1,16 +1,13 @@
 <script setup>
 import HeadNav from "@/components/head-nav.vue";
 import SideNav from "@/components/side-nav.vue";
-import {Message} from "@arco-design/web-vue";
 import {ref} from "vue";
 
 const showBottom = ref(false);
 
 //全局导航栏管理
-import {useNavStore} from "@/stores/nav";
 import FooterNav from "@/components/footer-nav.vue";
 
-const navStore = useNavStore();
 
 const onCollapse = (collapsed) => {
   // collapsed 收起时为true
@@ -30,7 +27,7 @@ const onCollapse = (collapsed) => {
 
         <a-layout>
           <!--侧边栏-->
-          <a-layout-sider :width="260" style="margin-left: 3vw" collapsed-width=0 breakpoint="lg" @breakpoint="onCollapse">
+          <a-layout-sider :width="260" style="margin-left: 3vw" :collapsed-width="0" breakpoint="lg" @breakpoint="onCollapse">
             <side-nav/>
           </a-layout-sider>
           <a-layout style="width: 100%;">

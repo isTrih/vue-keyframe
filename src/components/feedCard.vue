@@ -1,15 +1,18 @@
 <script setup>
+import {computed, ref} from "vue"
 
-defineProps({
+const props = defineProps({
   card_columns: {
     default: () => {
     }
   }
 })
 
-// const like = id => {
-//   emit('like', id)
-// }
+
+let len = computed(() => {
+
+  return Object.keys(props.card_columns).length;
+})
 
 //标题转换
 const titleFormat = (title) => {
@@ -51,6 +54,15 @@ const details = (id, event) => {
   emit('show-detail', id, left, top)
 }
 
+const heightFormat = (h, w) => {
+
+  if (h/w > ((4 * w) / 3)) {
+    return ((4 * w) / 3)
+  } else {
+    return h/w
+  }
+};
+
 const handleLoad = (card) => {
   card.loaded = true
 }
@@ -58,14 +70,14 @@ const handleLoad = (card) => {
 
 <template>
   <div class="col">
-    <div v-for="col in card_columns" :key="col.id">
+    <div :style="{width: 100/len + '%'}" v-for="col in card_columns" :key="col.id">
       <section v-for="card in col" :key="card.id">
         <div v-show="card.loaded" style=" padding: 0" class="card">
           <a :href="`/explore/${card.id}`" @click.prevent="details(card.id)">
             <img
                 :src="card.media_url"
                 class="image"
-                @load="handleLoad(card)"
+                :style="{width: 100 + '%'}" @load="handleLoad(card)"
                 alt=""
             />
           </a>
@@ -77,7 +89,7 @@ const handleLoad = (card) => {
               <a-row style="align-items: center;">
                 <RouterLink :to="`/user/index/${card.user.id}`">
                   <a-avatar :size="24">
-                    <img alt="avatar" :src="card.user.avatar"/>
+                    <img style="border: #d5d5d5 thin solid; border-radius: 100%" alt="avatar" :src="card.user.avatar"/>
                   </a-avatar>
                 </RouterLink>
                 <RouterLink :to="`/user/index/${card.user.id}`">
@@ -96,7 +108,8 @@ const handleLoad = (card) => {
         </div>
         <div v-if="!card.loaded">
           <div class="card loading">
-            <div class="image" :style="{height: card.media.height / (card.media.width / 250) + 'px'}">
+            <div class="image"
+                 :style="{height: heightFormat(card.media.height,(card.media.width / 230)) + 'px',}">
             </div>
             <div style="padding: 10px">
               <div
@@ -133,10 +146,10 @@ const handleLoad = (card) => {
 #title {
   display: -webkit-box;
   text-align: start;
-  margin-bottom: 8px;
+  margin-bottom: 0.2rem;
   word-break: break-all;
   color: black;
-  font-size: 14px;
+  font-size: 0.98rem;
   font-weight: 500;
 }
 
@@ -172,9 +185,8 @@ const handleLoad = (card) => {
 }
 
 section {
-  width: 250px;
   break-inside: avoid; /* 防止卡片被分割在两列中 */
-  margin: 20px 20px 20px 20px;
+  margin: 1rem 1rem 1rem 1rem;
 }
 
 .card {
@@ -184,7 +196,8 @@ section {
 
 .image {
   width: 250px;
-  border-radius: 0.8rem;
+  border-radius: 1rem;
+  border: #d5d5d5 1px solid;
   object-fit: fill;
 }
 

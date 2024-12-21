@@ -1,6 +1,8 @@
 <script setup>
 import {ref} from "vue";
 import Login from '@/views/Login/index.vue'
+import {Message} from "@arco-design/web-vue";
+
 
 //路由管理
 import router from "@/router/index.js";
@@ -12,7 +14,6 @@ const navStore = useNavStore();
 
 //全局用户数据
 import {useUserStore} from "@/stores/user";
-import {Message} from "@arco-design/web-vue";
 
 const userStore = useUserStore()
 
@@ -36,6 +37,14 @@ const changeShow = () => {
   show.value = !show.value;
 }
 
+const nameFormat = (name) => {
+  if (name.length > 5) {
+    return name.substring(0, 5) + '...';
+  } else {
+    return name;
+  }
+};
+
 function navClick(key) {
   navStore.setActiveNavbar([key]);
   if (key === '1') {
@@ -45,7 +54,7 @@ function navClick(key) {
   } else if (key === '3') {
     router.push({path: '/user/message'});
   } else if (key === '4') {
-    router.push({path: '/user/index/1'});
+    router.push({path: '/user/index/' + userStore.userInfo.user_id});
   }
 }
 
@@ -77,22 +86,27 @@ function toDoc(which) {
           </template>
           <p id="menu-t">通知</p>
         </a-menu-item>
-        <a-menu-item id="menu" class="menu" key="4" v-show="userStore.userInfo.id">
+        <a-menu-item id="menu" class="menu" key="4" v-show="userStore.userInfo.user_id">
           <template #icon>
             <a-avatar :size="24"
-                      image-url="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp">
-              Arco
+                      :image-url="userStore.userInfo.avatar">
+              头像
             </a-avatar>
           </template>
-          <p id="menu-t">我</p>
+          <p id="menu-t">{{"我（"+nameFormat(userStore.userInfo.user_name)+"）"}}</p>
         </a-menu-item>
       </a-menu>
     </div>
-    <div class="button" v-show="!userStore.userInfo.id">
+    <div class="button">
+      <a-button type="primary" v-show="userStore.userInfo.user_id" shape="round" size="large" @click="confirm" long>
+        退出登录
+      </a-button>
+    </div>
+    <div class="button" v-show="!userStore.userInfo.user_id">
       <a-button type="primary" shape="round" size="large" @click="changeShow" long>登录</a-button>
       <div style="border: 1px solid #b8b8b8;border-radius: 12px;margin-top: 12px;align-items: center;">
         <p class="f" style="font-weight: bold;color:black">马上登录即可享受： </p>
-        <P class="g f">
+        <p class="g f">
           <icon-thumb-up/>
           刷到更懂你的优质内容
         </p>

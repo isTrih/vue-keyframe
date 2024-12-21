@@ -61,5 +61,7 @@ function waterfall_column() {
     // 1.获取主容器的宽度
     var content = document.getElementById('content')
     var contentWidth = content.offsetWidth
-    return Math.floor(contentWidth / (280))
+    if (Math.floor(contentWidth / (280)) < 2) {
+        return 2
+    } else return Math.floor(contentWidth / (280))
 }

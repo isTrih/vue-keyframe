@@ -11,11 +11,13 @@ import router from "@/router/index.js";
 
 //全局导航栏管理
 import {useNavStore} from "@/stores/nav";
+
 const navStore = useNavStore();
 
 //全局用户数据
 import {useUserStore} from "@/stores/user";
 import {Message} from "@arco-design/web-vue";
+
 const userStore = useUserStore()
 
 //登录页面
@@ -39,7 +41,8 @@ function navClick(key) {
   } else if (key === '3') {
     router.push({path: '/user/message'});
   } else if (key === '4') {
-    router.push({path: '/user/index/1'});
+    router.push({path: '/user/index/' + userStore.userInfo.user_id});
+
   }
 }
 </script>
@@ -62,16 +65,16 @@ function navClick(key) {
       <a-menu-item id="menu" class="menu" key="3">
         <icon-notification/>
       </a-menu-item>
-      <a-menu-item v-if="userStore.userInfo.id" id="menu" class="menu" key="4" >
+      <a-menu-item v-if="userStore.userInfo.user_id" id="menu" class="menu" key="4">
         <template #icon>
           <a-avatar id="avatar" :size="32"
-                    image-url="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp">
+                    :image-url="userStore.userInfo.avatar">
           </a-avatar>
         </template>
       </a-menu-item>
-      <a-menu-item v-if="!userStore.userInfo.id" id="menu" class="menu" key="5" >
+      <a-menu-item v-if="!userStore.userInfo.user_id" id="menu" class="menu" key="5">
         <template #icon>
-          <a-avatar  id="avatar" :size="32" :style="{ backgroundColor: '#194D95' }"
+          <a-avatar id="avatar" :size="32" :style="{ backgroundColor: '#194D95' }"
                     @click="changeShow">
             登录
           </a-avatar>
@@ -87,7 +90,7 @@ function navClick(key) {
 </template>
 
 <style scoped>
-#avatar{
+#avatar {
   margin-bottom: 8px;
 }
 

@@ -6,8 +6,8 @@ import { Message } from '@arco-design/web-vue';
 // import { HttpsProxyAgent } from "https-proxy-agent";
 
 const http = axios.create({
-    // baseURL: 'https://aniapi.chaozj.com/v1',//服务器
-    baseURL: 'http://localhost:8888/v1',//本地测试
+    baseURL: 'https://aniapi.chaozj.com/v1',//服务器
+    // baseURL: 'http://localhost:8888/v1',//本地测试
 
     timeout: 5000,
 })

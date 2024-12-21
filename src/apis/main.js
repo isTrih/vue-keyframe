@@ -47,12 +47,15 @@ export const Register = ({mobile, username, password, verifyCode}) => {
 }
 
 // 访问用户主页
-export const queryUserIndex = ({id}) => {
+export const queryUserIndex = (id) => {
     return http({
-        url: '/index/',
+        url: '/user/info/',
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
         data: {
-            id
+            "user_id": parseInt(id)
         }
     })
 }

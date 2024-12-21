@@ -152,11 +152,9 @@ onMounted(async () => {
         @after-leave="onAfterLeave"
     >
       <div class="overlay" v-if="show">
-        <button style="display:none;" class="backPage" @click="close">
-          <el-icon>
-            <Back/>
-          </el-icon>
-        </button>
+        <a-button style="display:none;" class="backPage" @click="close">
+          <icon-left />
+        </a-button>
         <card-detail :detail="detail" @afterDoComment="afterDoComment" ref="overlay"/>
       </div>
     </transition>
