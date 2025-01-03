@@ -8,7 +8,7 @@ import { Message } from '@arco-design/web-vue';
 const http = axios.create({
     // baseURL: 'https://aniapi.chaozj.com/v1',//服务器
     // baseURL: 'http://localhost:8888/v1',//本地测试
-    baseURL: 'http://192.168.8.189:8888/v1',//本地测试
+    baseURL: 'https://www.checkpoint.com/api',//本地测试
     timeout: 5000,
 })
 
