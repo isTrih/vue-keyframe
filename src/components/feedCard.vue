@@ -1,5 +1,6 @@
 <script setup>
-import {computed, ref} from "vue"
+import {computed, ref, onUnmounted} from "vue"
+import {useResizeObserver} from "@vueuse/core";
 
 const props = defineProps({
   card_columns: {
@@ -15,13 +16,13 @@ let len = computed(() => {
 })
 
 //标题转换
-const titleFormat = (title) => {
-  if (title.length > 16) {
-    return title.substring(0, 16) + '...';
-  } else {
-    return title;
-  }
-};
+// const titleFormat = (title) => {
+//   if (title.length > 16) {
+//     return title.substring(0, 16) + '...';
+//   } else {
+//     return title;
+//   }
+// };
 
 //数字模糊转换
 function numFormat(num) {
@@ -54,14 +55,55 @@ const details = (id, event) => {
   emit('show-detail', id, left, top)
 }
 
-const heightFormat = (h, w) => {
 
-  if (h/w > ((4 * w) / 3)) {
-    return ((4 * w) / 3)
-  } else {
-    return h/w
+// const resizeObserver = useResizeObserver(sectionRef);
+//
+// // 当元素尺寸发生变化时，resizeObserver.value会包含最新的尺寸信息
+// resizeObserver.value.width; // 获取宽度
+// resizeObserver.value.height; // 获取高度
+//
+// // 也可以添加一个watcher来实时获取宽高
+// watch(resizeObserver, (newSize) => {
+//   console.log('Width:', newSize.width);
+//   console.log('Height:', newSize.height);
+// });
+
+
+const colRef = ref(null);
+const colWidth = ref(0);
+
+const {stop} = useResizeObserver(colRef, (entries) => {
+  for (let entry of entries) {
+    const {width} = entry.contentRect;
+    colWidth.value = width;
+    console.log(colWidth.value);
   }
-};
+});
+
+const heightFormat = (len, height, width) => {
+  let cardWidth = (colWidth.value / len - 32)
+//   toFixed(3);
+// parseFloat(cardWidthStr);
+  let cardHeight = (cardWidth * height / width)
+  let formalH = cardWidth * 148 / 105
+  // if (height < width) {
+  //   console.log("横向",height);
+  //   return height;
+  // }
+  if (cardHeight > formalH) {
+    return formalH;
+  } else {
+    return cardHeight;
+  }
+
+  // 当元素尺寸发生变化时，resizeObserver.value会包含最新的尺寸信息
+  // resizeObserver.value.height; // 获取高度
+}
+
+onUnmounted(() => {
+  stop()
+})
+// heightFormat(card.media.height,(card.media.width / 230))
 
 const handleLoad = (card) => {
   card.loaded = true
@@ -69,7 +111,7 @@ const handleLoad = (card) => {
 </script>
 
 <template>
-  <div class="col">
+  <div class="col" ref="colRef">
     <div :style="{width: 100/len + '%'}" v-for="col in card_columns" :key="col.id">
       <section v-for="card in col" :key="card.id">
         <div v-show="card.loaded" style=" padding: 0" class="card">
@@ -77,19 +119,23 @@ const handleLoad = (card) => {
             <img
                 :src="card.media_url"
                 class="image"
-                :style="{width: 100 + '%'}" @load="handleLoad(card)"
+                :style="{width: 100 + '%',height:heightFormat(len,card.media.height,card.media.width)+'px'}"
+                @load="handleLoad(card)"
                 alt=""
+                @click="heightFormat()"
             />
           </a>
           <div style="padding: 0.1rem">
-            <div style="margin-bottom: 2px;height: 20px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
-              <span id="title" @click="details(card.id)">{{ titleFormat(card.title) }}</span>
+            <div id="title" @click="details(card.id)"
+                 style="margin-bottom: 6px;height: 20px;">
+              {{ card.title }}
             </div>
             <div class="bottom" style="display:flex; justify-content: space-between;">
               <a-row style="align-items: center;">
                 <RouterLink :to="`/user/index/${card.user.id}`">
                   <a-avatar :size="24">
-                    <img style="border: #d5d5d5 thin solid; border-radius: 100%" alt="avatar" :src="card.user.avatar"/>
+                    <img style="border: var(--color-border-1) thin solid; border-radius: 100%" alt="avatar"
+                         :src="card.user.avatar"/>
                   </a-avatar>
                 </RouterLink>
                 <RouterLink :to="`/user/index/${card.user.id}`">
@@ -106,15 +152,16 @@ const handleLoad = (card) => {
             </div>
           </div>
         </div>
-        <div v-if="!card.loaded">
+        <div v-if="!card.loaded" style=" padding: 0" class="card">
           <div class="card loading">
             <div class="image"
-                 :style="{height: heightFormat(card.media.height,(card.media.width / 230)) + 'px',}">
+                 :style="{width: 100 + '%',height:heightFormat(len,card.media.height,card.media.width)+'px'}"
+            >
             </div>
             <div style="padding: 10px">
-              <div
-                  style="margin-bottom: 10px;height: 20px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
-                <span id="title" @click="details(card.id)">{{ titleFormat(card.title) }}</span>
+              <div id="title" @click="details(card.id)"
+                   style="margin-bottom: 6px;height: 20px;">
+                {{ card.title }}
               </div>
               <div class="bottom" style="display:flex; justify-content: space-between;">
                 <a-row style="align-items: center;">
@@ -144,13 +191,17 @@ const handleLoad = (card) => {
 
 <style scoped>
 #title {
-  display: -webkit-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-align: start;
+
   margin-bottom: 0.2rem;
-  word-break: break-all;
-  color: black;
+  color: var(--color-text-1);
   font-size: 0.98rem;
   font-weight: 500;
+
+  width: 100%;
 }
 
 .col {
@@ -195,10 +246,9 @@ section {
 }
 
 .image {
-  width: 250px;
   border-radius: 1rem;
-  border: #d5d5d5 1px solid;
-  object-fit: fill;
+  border: var(--color-border-1) 1px solid;
+  object-fit: cover;
 }
 
 .image:hover {
@@ -206,7 +256,7 @@ section {
 }
 
 .user_name {
-  color: black;
+  color: var(--color-text-1);
   margin-left: 10px;
   font-weight: 400;
   font-size: 0.8rem;

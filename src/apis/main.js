@@ -31,6 +31,7 @@ export const Verifycode = (mobile) => {
 
 // 注册
 export const Register = ({mobile, username, password, verifyCode}) => {
+    console.log(mobile, username, password, verifyCode)
     return http({
         url: '/user/register',
         method: 'POST',
@@ -38,10 +39,10 @@ export const Register = ({mobile, username, password, verifyCode}) => {
             'Content-Type': 'application/json'
         },
         data: {
-            "username": username,
+            "user_name": username,
             "password": password,
-            "mobile":mobile,
-            "verifyCode":verifyCode
+            "mobile": mobile,
+            "verifyCode": verifyCode
         }
     })
 }
@@ -60,7 +61,7 @@ export const queryUserIndex = (id) => {
     })
 }
 
-// 上传帖子
+// TODO:上传帖子
 export const uploadPost = (data) => {
     return http({
         url: '/upload/info/',
@@ -69,7 +70,7 @@ export const uploadPost = (data) => {
     })
 }
 
-// 帖子详情
+// TODO:帖子详情
 export const postDetail = ({id}) => {
     return http({
         url: '/post/detail/',
@@ -80,10 +81,10 @@ export const postDetail = ({id}) => {
     })
 }
 
-// 主页帖子
+// TODO:主页帖子
 export const queryPost = (offset, query) => {
     let arg = ""
-    if (query){
+    if (query) {
         arg = query
     }
     return http({
@@ -99,7 +100,7 @@ export const queryPost = (offset, query) => {
     })
 }
 
-// 评论帖子
+// TODO:评论帖子
 export const doComment = ({data}) => {
     return http({
         url: '/comment/',
@@ -108,7 +109,7 @@ export const doComment = ({data}) => {
     })
 }
 
-// 用户关注
+// TODO:用户关注
 export const doFocus = ({id}) => {
     return http({
         url: '/focus/',
@@ -117,7 +118,7 @@ export const doFocus = ({id}) => {
     })
 }
 
-// 获取用户关注
+// TODO:获取用户关注
 export const queryUserFocus = () => {
     return http({
         url: '/user/focus/',
@@ -125,7 +126,7 @@ export const queryUserFocus = () => {
     })
 }
 
-//取消关注
+// TODO:取消关注
 export const unFollow = ({id}) => {
     return http({
         url: '/user/unfollow/',
@@ -134,7 +135,7 @@ export const unFollow = ({id}) => {
     })
 }
 
-//更新用户信息
+// TODO:更新用户信息
 export const updateUserInfo = ({username, signature}) => {
     return http({
         url: '/user/update/',
@@ -146,14 +147,18 @@ export const updateUserInfo = ({username, signature}) => {
     })
 }
 
+//用户主页的三个类型
 export const queryUserPost = ({user_id, types, offset}) => {
     return http({
-        url: '/user/post/',
+        url: '/home/userfeeds/',
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
         data: {
-            user_id,
-            types,
-            offset
+            "user_id": parseInt(user_id),
+            "feed_type": types,
+            "offset": offset
         }
     })
 }

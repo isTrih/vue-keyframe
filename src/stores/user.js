@@ -8,8 +8,18 @@ export const useUserStore = defineStore('user', () => {
     const userCollect = ref([]);
     const userFavorite = ref([]);
     const headersObj = ref({})
-    const userRegister = async ({mobile, username, password}) => {
-        await Register({mobile, username, password});
+    const userRegister = async ({mobile, username, password, verifyCode}) => {
+        console.log(mobile, username, password, verifyCode);
+        const resp = await Register({mobile, username, password, verifyCode});
+        if (resp.code === 0) {
+            userInfo.value = resp.data;
+            headersObj.value = {Authorization: `Bearer ${userInfo.value.token}`}
+            console.log(resp);
+            return [resp.code, "注册成功"];
+        } else {
+            console.log(resp);
+            return [resp.code, resp.msg]
+        };
     };
 
     const getUserInfo = async ({mobile, password}) => {

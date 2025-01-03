@@ -21,18 +21,19 @@ const onCollapse = (collapsed) => {
        style="width: 100vw; height: calc(100vh);position: absolute;top: 0;left: 0;right: 0;bottom: 0;">
     <a-layout style="height: 100%;">
       <a-layout>
-        <a-layout-header>
+        <a-layout-header style="background-color: var(--color-bg-2);align-content: center;">
           <head-nav/>
         </a-layout-header>
 
         <a-layout>
           <!--侧边栏-->
-          <a-layout-sider :width="260" style="margin-left: 3vw" :collapsed-width="0" breakpoint="lg" @breakpoint="onCollapse">
+          <a-layout-sider :width="260" style="border-left: 3vw" :collapsed-width="0" breakpoint="lg" @breakpoint="onCollapse">
             <side-nav/>
           </a-layout-sider>
           <a-layout style="width: 100%;">
-            <a-layout-content>
-              <div class="maxSize" id="content">
+            <a-layout-content >
+<!--              就是这个-->
+              <div class="maxSize" id="content" ref="containerRef">
                 <RouterView :key="$route.fullPath"/>
               </div>
               <!--              <RouterView :key="$route.fullPath"/>-->
@@ -88,7 +89,7 @@ const onCollapse = (collapsed) => {
 
 .layout-demo :deep(.arco-layout-footer) {
   height: 48px;
-  background-color: var(--color-primary-light-1);
+  background-color: var(--color-bg-2);
 }
 
 .layout-demo :deep(.arco-layout-content) {

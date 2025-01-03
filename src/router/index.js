@@ -10,6 +10,8 @@ const Agreement = () => import('@/views/Doc/agreement.vue');
 const Privacy = () => import('@/views/Doc/privacy.vue');
 const SocietyRule = () => import('@/views/Doc/society-rule.vue');
 const Robots = () => import('@/views/Robots/index.vue')
+const Ads = () => import('@/views/Ads/index.vue')
+
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -17,7 +19,7 @@ const router = createRouter({
             path: '/', name: '首页',
             component: Home,
             meta: {
-                title: '关键帧|生活学习关键的一帧'
+                title: '关键帧丨每一秒都是关键帧'
             },
             children: [
                 {
@@ -25,21 +27,21 @@ const router = createRouter({
                     name: 'index',
                     component: Explore,
                     meta: {
-                        title: '关键帧|生活学习关键的一帧',
+                        title: '关键帧丨每一秒都是关键帧',
                     },
                 },
                 {
                     path: 'user/message',
                     component: Message,
                     meta: {
-                        title: '消息中心|关键帧'
+                        title: '消息中心丨关键帧'
                     }
                 },
                 {
                     path: 'user/index/:id',
                     component: UserIndex,
                     meta: {
-                        title: '用户中心|关键帧'
+                        title: '用户中心丨关键帧'
                     },
 
                 },
@@ -47,7 +49,7 @@ const router = createRouter({
                     path: 'user/control',
                     component: UserFrameControl,
                     meta: {
-                        title: '创作中心|关键帧'
+                        title: '创作中心丨关键帧'
                     },
 
                 }]
@@ -55,25 +57,25 @@ const router = createRouter({
         {
             path: '/doc/', name: '协议',
             meta: {
-                title: '协议|关键帧'
+                title: '协议丨关键帧'
             },
             children: [{
                 path: 'agreement',
                 component: Agreement,
                 meta: {
-                    title: '协议|关键帧'
+                    title: '用户协议丨关键帧'
                 },
             }, {
                 path: 'privacy',
                 component: Privacy,
                 meta: {
-                    title: '隐私政策|关键帧'
+                    title: '隐私政策丨关键帧'
                 },
             }, {
                 path: 'societyrule',
                 component: SocietyRule,
                 meta: {
-                    title: '隐私政策|关键帧'
+                    title: '隐私政策丨关键帧'
                 },
             }]
         },
@@ -87,7 +89,23 @@ const router = createRouter({
             path: '/robots.txt',
             name: 'robots',
             component: Robots,
+            meta: {
+                title: 'robots.txt',
+            },
+        }, {
+            path: '/ads.txt',
+            name: 'ads',
+            component: Ads,
+            meta: {
+                title: 'ads.txt',
+            },
         }],
 })
+
+router.beforeEach((to, from, next) => {
+    const title = to.meta.title || '默认标题'; // 如果路由没有提供标题，则使用默认标题
+    document.title = title;
+    next();
+});
 
 export default router

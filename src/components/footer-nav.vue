@@ -54,30 +54,43 @@ function navClick(key) {
   text-align: center;" :selected-keys="navStore.activeNavbar" @menuItemClick="navClick">
       <a-menu-item id="menu" class="menu" key="1">
         <template #icon>
-          <icon-home/>
+          <div class="footbutton">
+            <icon-home/>
+          </div>
         </template>
       </a-menu-item>
       <a-menu-item id="menu" class="menu" key="2">
         <template #icon>
-          <icon-folder-add/>
+          <div class="footbutton">
+            <icon-folder-add/>
+          </div>
         </template>
       </a-menu-item>
       <a-menu-item id="menu" class="menu" key="3">
-        <icon-notification/>
+        <template #icon>
+          <div class="footbutton">
+            <icon-notification/>
+          </div>
+        </template>
       </a-menu-item>
       <a-menu-item v-if="userStore.userInfo.user_id" id="menu" class="menu" key="4">
         <template #icon>
-          <a-avatar id="avatar" :size="32"
-                    :image-url="userStore.userInfo.avatar">
-          </a-avatar>
+          <div class="footbutton">
+            <a-avatar id="avatar" :size="32"
+                      :image-url="userStore.userInfo.avatar">
+            </a-avatar>
+          </div>
         </template>
       </a-menu-item>
       <a-menu-item v-if="!userStore.userInfo.user_id" id="menu" class="menu" key="5">
         <template #icon>
-          <a-avatar id="avatar" :size="32" :style="{ backgroundColor: '#194D95' }"
-                    @click="changeShow">
-            登录
-          </a-avatar>
+          <div class="footbutton">
+            <a-avatar id="avatar" :size="32" :style="{ backgroundColor: '#194D95' }"
+                      @click="changeShow">
+              登录
+            </a-avatar>
+          </div>
+
         </template>
 
       </a-menu-item>
@@ -108,14 +121,20 @@ function navClick(key) {
   text-align: center;
 }
 
+.footbutton {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  text-align: center;
+  height: 0.2rem;
+}
+
 .menu-demo {
   position: fixed;
-  bottom: 2px;
+  bottom: 0px;
   left: 0;
   width: 100%;
-  background-color: #292929;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
 }
 </style>

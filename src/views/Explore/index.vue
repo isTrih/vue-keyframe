@@ -184,7 +184,7 @@ onMounted(async () => {
   width: 40px;
   height: 40px;
   border-radius: 40px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-1);
   cursor: pointer;
   transition: all .3s;
 }

@@ -13,6 +13,8 @@ onMounted(() => {
       event.preventDefault();
     });
   };
+
+  // document.body.setAttribute('arco-theme', 'dark')
 });
 </script>
 <template>
@@ -28,5 +30,6 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: var(--color-bg-1);
 }
 </style>

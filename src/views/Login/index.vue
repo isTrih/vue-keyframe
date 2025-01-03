@@ -74,7 +74,16 @@ const rulesRegister = {
   ],
   username: [
     {required: true, message: '用户名不能为空！', trigger: 'blur'},
-    {max: 20, message: '用户名不能超过20个字符！', trigger: 'blur'}
+    {
+      validator: (value, callback) => {
+        // 自定义校验逻辑
+        if (value.length >= 2 && value.length <= 14) {
+          return callback();
+        } else {
+          return callback('用户名长度为2-14');
+        }
+      }
+    }
   ],
   password: [
     {required: true, message: '密码不能为空', trigger: 'blur'},
@@ -210,15 +219,28 @@ const formRegisterRef = ref(null)
 const userStore = useUserStore();
 //注册
 const doReg = () => {
+  const {mobile, password, username,sms} = formRegister.value;
+  const verifyCode = sms
   formRegisterRef.value.validate(async (valid) => {
     if (!valid) {
-      Message.success({
-        content: '注册成功',
-        duration: 1500,
-      })
+      console.log(valid)
+      const [code, msg] = await userStore.userRegister({mobile, username, password, verifyCode});
+      if (code === 0) {
+        // 登录成功
+        Message.success({
+          content: '注册成功',
+          duration: 1500,
+        })
+        closeLogin()
+      } else {
+        Message.error({
+          content: msg,
+          duration: 1500,
+        })
+      }
     } else {
       Message.error({
-        content: '注册失败',
+        content: '请检查填写数据是否正确。',
         duration: 1500,
       })
       console.log(valid)
@@ -247,9 +269,6 @@ const doLogin = () => {
           duration: 1500,
         })
       }
-
-      //TODO:这里写登录跳转路由
-
     } else {
       Message.error({
         content: '请检查填写数据是否正确。',
@@ -268,7 +287,7 @@ const doLogin = () => {
   <div class="overlay" @click="closeLogin">
   </div>
   <div class="login" style="z-index: 9999">
-    <div class="box">
+    <div class="box" :style="{height: showLogin===true?'17rem':'27rem'}">
       <!--      <div class="leftArea"></div>-->
       <div class="topArea">
         <p style="font-size: 1.2rem;">
@@ -300,13 +319,17 @@ const doLogin = () => {
             </a-checkbox>
           </a-form-item>
           <a-form-item style="margin-top: 4px">
-            <a-button html-type="submit" long type="primary">登录</a-button>
+            <a-button shape="round" html-type="submit" long type="primary">登录</a-button>
           </a-form-item>
         </a-form>
       </div>
       <!-- 注册 -->
       <div class="rightArea" v-if="!showLogin">
         <a-form ref="formRegisterRef" :model="formRegister" :rules="rulesRegister" @submit="doReg">
+          <a-form-item style="padding-left: 88px" hide-label hide-asterisk field="username" label="">
+            <a-input v-model="formRegister.username" placeholder="请输入用户名...">
+            </a-input>
+          </a-form-item>
           <a-form-item style="padding-left: 88px" hide-label hide-asterisk field="mobile" label="">
             <a-input v-model="formRegister.mobile" placeholder="请输入手机号...">
               <template #append>
@@ -336,7 +359,7 @@ const doLogin = () => {
             </a-checkbox>
           </a-form-item>
           <a-form-item style="margin-top: 4px">
-            <a-button html-type="submit" type="primary" long>注册</a-button>
+            <a-button shape="round" html-type="submit" type="primary" long>注册</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -350,14 +373,13 @@ const doLogin = () => {
   background-color: white;
   border-radius: 2rem;
   position: absolute;
-  left: calc(50vw - 16rem);
+  left: calc(50vw - 14rem);
   top: calc(38vh - 12rem);
 }
 
 .box {
   box-shadow: 32px 18px 21px -3px rgba(0, 0, 0, 0.1);
-  width: 32rem;
-  height: 24rem;
+  width: 28rem;
   border-radius: 2rem;
   background-color: transparent;
   border-color: #f3f4f6;

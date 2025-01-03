@@ -27,7 +27,7 @@ const getUserInfo = async () => {
   const id = route.params.id
   const res = await queryUserIndex(id)
   userInfo.value = res.data
-  document.title = res.data.user_name + '|关键帧'
+  document.title = res.data.user_name + '丨关键帧'
 }
 const checkFollow = (id) => {
   if (userStore.userInfo.user_id === id) {
@@ -53,7 +53,7 @@ const doFocusOn = async (id) => {
 // 加载用户信息结束 ////////////////////////////////////////////////////////////
 
 // 主页切换标签 //////////////////////////////////////////////////////////////
-const radio = ref('帖子')
+const radio = ref('帧动态')
 const userPost = ref([])
 const userCollect = ref([])
 const userFavorite = ref([])
@@ -70,53 +70,59 @@ const Toggle = async () => {
   const user_id = route.params.id
   const offset = 0
   const types = radio.value
-  if (radio.value === '帖子' && userPost.value.length === 0) {
+  if (userStore.userInfo.user_id != user_id && radio.value !== '帧动态') {
+    return
+  }
+  if (radio.value === '帧动态' && userPost.value.length === 0) {
     const post = await queryUserPost({user_id, types, offset})
-    userPost.value = post.info
+    userPost.value = post.data.feeds
     waterFallInit(columns, card_columns_posts, arrHeight, userPost)
   } else if (radio.value === '收藏' && userCollect.value.length === 0) {
     const post = await queryUserPost({user_id, types, offset})
-    userCollect.value = post.info
+    userCollect.value = post.data.feeds
     waterFallInit(columns, card_columns_collect, arrHeight, userCollect)
-  } else if (radio.value === '点赞' && userFavorite.value.length === 0) {
+  } else if (radio.value === '喜欢' && userFavorite.value.length === 0) {
     const post = await queryUserPost({user_id, types, offset})
-    userFavorite.value = post.info
+    userFavorite.value = post.data.feeds
     waterFallInit(columns, card_columns_like, arrHeight, userFavorite)
   }
   disabled.value = false;
 }
 const load = async () => {
   disabled.value = true;
-  const user_id = userInfo.value.user_id;
+  const user_id = parseInt(userInfo.value.user_id);
   const types = radio.value;
-  if (types === '帖子') {
+  if (userStore.userInfo.user_id != user_id && radio.value !== '帧动态') {
+    return
+  }
+  if (types === '帧动态') {
     const offset = userPost.value.length;
     const post = await queryUserPost({user_id, types, offset});
-    if (post.info.length === 0) {
+    if (post.data === null) {
       disabled.value = true;
     } else {
-      userPost.value = [...userPost.value, ...post.info];
-      waterFallMore(arrHeight, card_columns_posts, post.info)
+      userPost.value = [...userPost.value, ...post.data.feeds];
+      waterFallMore(arrHeight, card_columns_posts, post.data.feeds)
       disabled.value = false;
     }
-  } else if (types === '点赞') {
+  } else if (types === '喜欢') {
     const offset = userFavorite.value.length;
     const like = await queryUserPost({user_id, types, offset});
-    if (like.info.length === 0) {
+    if (like.data === null) {
       disabled.value = true;
     } else {
-      userFavorite.value = [...userFavorite.value, ...like.info];
-      waterFallMore(arrHeight, card_columns_like, like.info)
+      userFavorite.value = [...userFavorite.value, ...like.data.feeds];
+      waterFallMore(arrHeight, card_columns_like, like.data.feeds)
       disabled.value = false;
     }
   } else if (types === '收藏') {
     const offset = userCollect.value.length;
     const collect = await queryUserPost({user_id, types, offset});
-    if (collect.info.length === 0) {
+    if (collect.data === null) {
       disabled.value = true;
     } else {
-      userCollect.value = [...userCollect.value, ...collect.info];
-      waterFallMore(arrHeight, card_columns_collect, collect.info)
+      userCollect.value = [...userCollect.value, ...collect.data.feeds];
+      waterFallMore(arrHeight, card_columns_collect, collect.data.feeds)
       disabled.value = false;
     }
   }
@@ -141,12 +147,12 @@ const showMessage = async (id, left, top) => {
 const afterDoComment = (comment) => Details.afterDoComment(comment)
 const close = () => {
   window.history.pushState({}, '', `/user/index/${userInfo.value.user_id}`);
-  document.title = userInfo.value.user_name + '|关键帧'
+  document.title = userInfo.value.user_name + '丨关键帧'
   show.value = false
 }
 onClickOutside(overlay, () => {
   window.history.pushState({}, "", `/user/index/${userInfo.value.user_id}`);
-  document.title = userInfo.value.user_name + '|关键帧'
+  document.title = userInfo.value.user_name + '丨关键帧'
   show.value = false;
 });
 let style = null;
@@ -184,17 +190,21 @@ const onAfterLeave = () => {
 }
 // 卡片详情页的内容结束 //////////////////////////////////////////////////////////
 const resize = () => {
-  if (radio.value === '帖子') {
+  const user_id = route.params.id
+  if (userStore.userInfo.user_id !== user_id && radio.value !== '帧动态') {
+    return
+  }
+  if (radio.value === '帧动态') {
     resizeWaterFall(columns, card_columns_posts, arrHeight, userPost)
   } else if (radio.value === '收藏') {
     resizeWaterFall(columns, card_columns_collect, arrHeight, userCollect)
-  } else if (radio.value === '点赞') {
+  } else if (radio.value === '喜欢') {
     resizeWaterFall(columns, card_columns_like, arrHeight, userFavorite)
   }
 }
 onMounted(async () => {
   await getUserInfo()
-  // await Toggle()
+  await Toggle()
   resize()
 })
 </script>
@@ -230,22 +240,29 @@ onMounted(async () => {
       </a-row>
 
     </div>
-    <div class="checkBox" @change="Toggle">
-      <el-radio-group v-model="radio" size="large">
-        <el-radio-button class="radio" label="帖子" name="post"/>
-        <el-radio-button class="radio" label="收藏" name="collect"/>
-        <el-radio-button class="radio" label="点赞" name="like"/>
-      </el-radio-group>
-    </div>
+
+      <div class="checkBox" @change="Toggle" style="width: 100%;height: 2rem;background-color: var(--color-bg-2);margin-top: 1rem;margin-bottom: 1rem;">
+        <a-radio-group v-model="radio" size="large" type="button">
+          <a-radio class="radio" value="帧动态">帧动态</a-radio>
+          <a-radio value="收藏">收藏</a-radio>
+          <a-radio value="喜欢">喜欢</a-radio>
+        </a-radio-group>
+      </div>
+
     <div style="margin-top: 30px;" v-if="userInfo">
-      <div v-if="radio === '帖子'">
+      <div v-if="radio === '帧动态'">
         <div v-if="userPost.length === 0">
-          <el-empty description="现在还没有帖子..."/>
+          <a-empty>
+            <template #image>
+              <icon-exclamation-circle-fill/>
+            </template>
+            {{checkFollow(userInfo.user_id)?'你还没有发过帖哦！':'该用户暂未发帖哦！'}}
+          </a-empty>
         </div>
-        <div v-infinite-scroll="load" :infinite-scroll-disabled="disabled" :infinite-scroll-delay="200"
-             :infinite-scroll-distance="100"
+        <div v-infinite-scroll="load" :infinite-scroll-disabled="disabled" :infinite-scroll-delay="280"
+              :infinite-scroll-distance="120"
              v-else>
-          <home-card :card_columns="card_columns_posts" @show-detail="showMessage"></home-card>
+          <home-card class="cards" :card_columns="card_columns_posts" @show-detail="showMessage"></home-card>
         </div>
         <transition
             name="fade"
@@ -266,12 +283,17 @@ onMounted(async () => {
       </div>
       <div v-else-if="radio === '收藏'">
         <div v-if="userCollect.length === 0">
-          <el-empty description="现在还没有收藏..."/>
+          <a-empty>
+            <template #image>
+              <icon-exclamation-circle-fill/>
+            </template>
+            {{checkFollow(userInfo.user_id)?'你还没有收藏过帧哦！':'只能看自己的收藏啦！'}}
+          </a-empty>
         </div>
-        <div v-infinite-scroll="load" :infinite-scroll-disabled="disabled" :infinite-scroll-delay="200"
-             :infinite-scroll-distance="100"
+        <div v-infinite-scroll="load" :infinite-scroll-disabled="disabled" :infinite-scroll-delay="280"
+              :infinite-scroll-distance="120"
              v-else>
-          <home-card :card_columns="card_columns_collect" ref="overlay" @show-detail="showMessage"></home-card>
+          <home-card class="cards" :card_columns="card_columns_collect" ref="overlay" @show-detail="showMessage"></home-card>
         </div>
         <transition
             name="fade"
@@ -290,14 +312,19 @@ onMounted(async () => {
           </div>
         </transition>
       </div>
-      <div v-else-if="radio === '点赞'">
+      <div v-else-if="radio === '喜欢'">
         <div v-if="userFavorite.length === 0">
-          <el-empty description="现在还没有点赞..."/>
+          <a-empty>
+            <template #image>
+              <icon-exclamation-circle-fill/>
+            </template>
+            {{checkFollow(userInfo.user_id)?'你还没有点过帧哦！':'只能看自己的点赞哦！'}}
+          </a-empty>
         </div>
-        <div v-infinite-scroll="load" :infinite-scroll-disabled="disabled" :infinite-scroll-delay="200"
-             :infinite-scroll-distance="100"
+        <div v-infinite-scroll="load" :infinite-scroll-disabled="disabled" :infinite-scroll-delay="280"
+              :infinite-scroll-distance="120"
              v-else>
-          <home-card :card_columns="card_columns_like" @show-detail="showMessage"></home-card>
+          <home-card class="cards" :card_columns="card_columns_like" @show-detail="showMessage"></home-card>
         </div>
         <transition
             name="fade"
@@ -322,10 +349,19 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.cards{
+  margin-bottom: 160px;
+}
+.container {
+  width: 100%;
+  align-items: center;
+  overflow-x: hidden;
+}
+
 .userInfo {
   display: flex;
   width: 100%;
-  color: #181818;
+  color: var(--color-text-1);
   align-items: center;
   justify-content: center;
 }
@@ -358,9 +394,6 @@ onMounted(async () => {
 }
 
 .checkBox {
-  margin-top: 50px;
-  position: relative;
-  left: 40%;
 }
 
 .overlay {
